@@ -37,6 +37,7 @@ class ComposerLinter(linter.Linter):
         if self.manifest_path:
             self.read_manifest(path.getmtime(self.manifest_path))
 
+    @util.ensure_cmd_is_str
     def context_sensitive_executable_path(self, cmd):
         """
         Attempt to locate the composer package specified in cmd.
@@ -53,14 +54,14 @@ class ComposerLinter(linter.Linter):
             return success, executable
 
         local_cmd = None
-        global_cmd = util.which(cmd[0])
+        global_cmd = util.which(cmd)
 
         if self.manifest_path:
-            local_cmd = self.find_local_cmd_path(cmd[0])
+            local_cmd = self.find_local_cmd_path(cmd)
 
         if not local_cmd and not global_cmd:
             logger.warning(
-                'WARNING: {} cannot locate \'{}\''.format(self.name, cmd[0]))
+                'WARNING: {} cannot locate \'{}\''.format(self.name, cmd))
             return True, None
 
         composer_cmd_path = local_cmd if local_cmd else global_cmd
